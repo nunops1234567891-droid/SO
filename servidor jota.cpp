@@ -23,7 +23,7 @@ static void ensure_fifo(void) {
     struct stat st;
     if (stat(FIFO_PATH, &st) == 0) {
         if (!S_ISFIFO(st.st_mode)) {
-            // existe mas n„o È FIFO
+            // existe mas n√£o √© FIFO
             _exit(1);
         }
         return;
@@ -62,7 +62,7 @@ static char **tokenize_args(char *cmd, int *argc_out) {
 
     char *p = cmd;
 
-    // saltar espaÁos iniciais
+    // saltar espa√ßos iniciais
     while (*p && is_space(*p)) p++;
 
     while (*p) {
@@ -75,7 +75,7 @@ static char **tokenize_args(char *cmd, int *argc_out) {
 
         argv[argc++] = p;
 
-        // avanÁar atÈ espaÁo ou fim
+        // avan√ßar at√© espa√ßo ou fim
         while (*p && !is_space(*p)) p++;
 
         if (!*p) break;
@@ -84,7 +84,7 @@ static char **tokenize_args(char *cmd, int *argc_out) {
         *p = '\0';
         p++;
 
-        // saltar espaÁos atÈ prÛximo token
+        // saltar espa√ßos at√© pr√≥ximo token
         while (*p && is_space(*p)) p++;
     }
 
@@ -97,11 +97,11 @@ int main(void) {
     ensure_fifo();
 
     while (1) {
-        // 1) open FIFO O_RDONLY (bloqueia atÈ um cliente abrir para escrever) :contentReference[oaicite:3]{index=3}
+        // 1) open FIFO O_RDONLY (bloqueia at√© um cliente abrir para escrever) :contentReference[oaicite:3]{index=3}
         int fd = open(FIFO_PATH, O_RDONLY);
         if (fd < 0) continue;
 
-        // 2) read atÈ EOF (cliente fecha FIFO) :contentReference[oaicite:4]{index=4}
+        // 2) read at√© EOF (cliente fecha FIFO) :contentReference[oaicite:4]{index=4}
         size_t cap = 4096, len = 0;
         char *buf = (char*)malloc(cap);
         if (!buf) { close(fd); continue; }
@@ -125,7 +125,7 @@ int main(void) {
         close(fd);
         if (!buf) continue;
 
-        // garantir terminaÁ„o
+        // garantir termina√ß√£o
         if (len == cap) {
             char *tmp = (char*)realloc(buf, cap + 1);
             if (!tmp) { free(buf); continue; }
@@ -134,7 +134,7 @@ int main(void) {
         }
         buf[len] = '\0';
 
-        // 3) parsing nÌvel 1: comandos separados por ';' :contentReference[oaicite:5]{index=5}
+        // 3) parsing n√≠vel 1: comandos separados por ';' :contentReference[oaicite:5]{index=5}
         // vamos guardar pids para esperar por todos
         int pid_cap = 16, pid_count = 0;
         pid_t *pids = (pid_t*)malloc(sizeof(pid_t) * (size_t)pid_cap);
@@ -143,10 +143,10 @@ int main(void) {
         char *save = NULL;
         char *cmd = strtok_r(buf, ";", &save);
 
-        // tambÈm guardo as strings originais para o log (simplificaÁ„o)
+        // tamb√©m guardo as strings originais para o log (simplifica√ß√£o)
         // (reconstruo depois a partir de argv)
         while (cmd) {
-            // ignorar comandos vazios/ espaÁos
+            // ignorar comandos vazios/ espa√ßos
             char *t = cmd;
             while (*t && is_space(*t)) t++;
             if (*t) {
@@ -162,7 +162,7 @@ int main(void) {
                         if (pid_count == pid_cap) {
                             pid_cap *= 2;
                             pid_t *tmp = (pid_t*)realloc(pids, sizeof(pid_t) * (size_t)pid_cap);
-                            if (!tmp) { /* sem memÛria: ainda assim continuo */ }
+                            if (!tmp) { /* sem mem√≥ria: ainda assim continuo */ }
                             else pids = tmp;
                         }
                         pids[pid_count++] = pid;
@@ -194,9 +194,9 @@ int main(void) {
             if (WIFEXITED(st)) exitcode = WEXITSTATUS(st);
             else if (WIFSIGNALED(st)) exitcode = 128 + WTERMSIG(st);
 
-            // Aqui n„o sei qual comando corresponde a cada pid sem mapear.
-            // Para manter simples (e ainda v·lido), registo apenas o pid.
-            // Se quiseres, eu tambÈm posso mapear pid->string do comando (muito f·cil).
+            // Aqui n√£o sei qual comando corresponde a cada pid sem mapear.
+            // Para manter simples (e ainda v√°lido), registo apenas o pid.
+            // Se quiseres, eu tamb√©m posso mapear pid->string do comando (muito f√°cil).
             char line[256];
             snprintf(line, sizeof(line), "pid=%ld; exit status: %d", (long)pids[i], exitcode);
             append_log_line(line);
