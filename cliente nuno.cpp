@@ -45,7 +45,7 @@ int main(int argc, char **argv) {
     int i = 1;
 
     while (i < argc) {
-        // início de um comando
+        // inÃ­cio de um comando
         if (!first_cmd) {
             // adicionar ';'
             if (len + 1 >= cap) {
@@ -58,11 +58,11 @@ int main(int argc, char **argv) {
         }
         first_cmd = 0;
 
-        // copiar tokens até '--' ou fim
+        // copiar tokens atÃ© '--' ou fim
         int first_tok = 1;
         while (i < argc && strcmp(argv[i], "--") != 0) {
             size_t tlen = strlen(argv[i]);
-            // espaço entre args
+            // espaÃ§o entre args
             size_t need = tlen + (first_tok ? 0 : 1);
 
             while (len + need >= cap) {
